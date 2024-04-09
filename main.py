@@ -9,9 +9,9 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score
 
 # Read the dataset from a CSV file
-df = pd.read_csv("Dataset.csv")
-df1 = pd.read_csv("sqli.csv", encoding='utf-16')
-df2 = pd.read_csv("sqliv2.csv", encoding='utf-16')
+df = pd.read_csv("Datasets/Dataset.csv")
+df1 = pd.read_csv("Datasets/sqli.csv", encoding='utf-16')
+df2 = pd.read_csv("Datasets/sqliv2.csv", encoding='utf-16')
 # Split the dataset into features (X) and target (y)
 # Rename columns for consistency
 df.columns = ['Query', 'Label']
@@ -92,7 +92,7 @@ new_query = "SELECT * FROM users WHERE username = 'admin' AND password = '' OR '
 prediction = best_model.predict([new_query])
 print("Prediction:", prediction)
 import joblib
-joblib.dump(best_model, "best_model.pkl")
+joblib.dump(best_model, "Models/best_model.pkl")
 
 '''
 from skl2onnx import convert_sklearn
