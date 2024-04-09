@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SQL Injection Detection</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        form {
+            margin-top: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input[type="text"] {
+            width: 300px;
+            padding: 5px;
+            margin-bottom: 10px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>SQL Injection Detection</h1>
+
+    <form id="myForm">
+        <label for="query">SQL Query:</label>
+        <input type="text" id="query" name="query" required>
+
+        <button type="submit">Submit</button>
+    </form>
+
+    <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web/dist/ort.min.js"></script>
+    <script>
+        // Load the ONNX model
+        // Load the ONNX model using fetch
+        const loadModel = async () => {
+            try {
+                const response = await fetch('best_model.onnx');
+                const modelData = await response.arrayBuffer();
+                const session = await ort.InferenceSession.create(modelData);
+                return session;
+            } catch (error) {
+                console.error('Failed to load the model:', error);
+                return null;
+            }
+        };
+
+        // Make predictions using the loaded model
+        const makePrediction = async (session, query) => {
+            try {
+                const input = {
+                    'input': query
+                };
+                const output = await session.run(input);
+                return output.prediction[0];
+            } catch (error) {
+                console.error('Failed to make a prediction:', error);
+                return null;
+            }
+        };
+
+        // Function to handle form submission
+        const handleSubmit = async (event) => {
+            event.preventDefault(); // Prevent form submission
+
+            const query = document.getElementById('query').value;
+            const session = await loadModel();
+
+            if (session) {
+                const prediction = await makePrediction(session, [query]);
+
+                if (prediction === 1) {
+                    alert('SQL injection detected!');
+                } else {
+                    alert('Query is safe.');
+                }
+            } else {
+                alert('Failed to load the model.');
+            }
+        };
+
+        // Add event listener to the form submission
+        document.getElementById('myForm').addEventListener('submit', handleSubmit);
+    </script>
+</body>
+</html>
